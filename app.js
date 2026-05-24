@@ -34,6 +34,9 @@ const customWordsInput = document.querySelector("#customWordsInput");
 const addCustomWords = document.querySelector("#addCustomWords");
 const clearCustomWords = document.querySelector("#clearCustomWords");
 const customWordsStatus = document.querySelector("#customWordsStatus");
+const bulkWordsInput = document.querySelector("#bulkWordsInput");
+const bulkAddWords = document.querySelector("#bulkAddWords");
+const bulkWordsStatus = document.querySelector("#bulkWordsStatus");
 const quizPrompt = document.querySelector("#quizPrompt");
 const quizRomaji = document.querySelector("#quizRomaji");
 const quizOptions = document.querySelector("#quizOptions");
@@ -275,6 +278,30 @@ function parseCustomWords(text) {
     .map(([kana, romaji, meaning, type = "custom"]) => ({ kana, romaji, meaning, type }));
 }
 
+function parseBulkWords(text) {
+  const grouped = {};
+  let skipped = 0;
+
+  text
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .forEach((line) => {
+      const parts = line.split(/\t|,/).map((part) => part.trim());
+      const lessonId = Number(parts[0]?.replace(/^L/i, ""));
+
+      if (!Number.isInteger(lessonId) || lessonId < 1 || lessonId > 25 || parts.length < 4) {
+        skipped += 1;
+        return;
+      }
+
+      const [, kana, romaji, meaning, type = "custom"] = parts;
+      grouped[lessonId] = [...(grouped[lessonId] || []), { kana, romaji, meaning, type }];
+    });
+
+  return { grouped, skipped };
+}
+
 function refreshLessonOrder() {
   delete state.flashcardOrder[state.lessonId];
   state.flashcardIndex = 0;
@@ -344,6 +371,28 @@ clearCustomWords.addEventListener("click", () => {
   saveCustomWords();
   customWordsStatus.textContent = `Cleared ${count} added word${count === 1 ? "" : "s"} from Lesson ${state.lessonId}.`;
   refreshLessonOrder();
+  render();
+});
+
+bulkAddWords.addEventListener("click", () => {
+  const { grouped, skipped } = parseBulkWords(bulkWordsInput.value);
+  const lessonIds = Object.keys(grouped);
+  const addedCount = lessonIds.reduce((sum, lessonId) => sum + grouped[lessonId].length, 0);
+
+  if (!addedCount) {
+    bulkWordsStatus.textContent = "No valid rows found. Use: lesson, Japanese, romaji, meaning, type.";
+    return;
+  }
+
+  lessonIds.forEach((lessonId) => {
+    state.customWords[lessonId] = [...(state.customWords[lessonId] || []), ...grouped[lessonId]];
+    delete state.flashcardOrder[lessonId];
+  });
+
+  saveCustomWords();
+  bulkWordsInput.value = "";
+  refreshLessonOrder();
+  bulkWordsStatus.textContent = `Imported ${addedCount} word${addedCount === 1 ? "" : "s"} across ${lessonIds.length} lesson${lessonIds.length === 1 ? "" : "s"}${skipped ? `; skipped ${skipped} invalid row${skipped === 1 ? "" : "s"}.` : "."}`;
   render();
 });
 

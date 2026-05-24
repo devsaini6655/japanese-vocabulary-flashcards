@@ -262,6 +262,45 @@ h1 {
   display: block;
 }
 
+.bulk-import-panel {
+  margin-bottom: 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 12px 24px rgba(30, 31, 36, 0.06);
+}
+
+.bulk-import-panel summary {
+  padding: 16px;
+  cursor: pointer;
+  font-weight: 900;
+}
+
+.bulk-import-body {
+  display: grid;
+  gap: 12px;
+  padding: 0 16px 16px;
+}
+
+.bulk-import-body textarea {
+  width: 100%;
+  min-height: 132px;
+  resize: vertical;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  outline: 0;
+  background: white;
+  color: var(--ink);
+  font: inherit;
+  line-height: 1.5;
+}
+
+.bulk-import-body textarea:focus {
+  border-color: rgba(201, 69, 61, 0.56);
+  box-shadow: 0 0 0 3px rgba(201, 69, 61, 0.12);
+}
+
 .flashcard-shell {
   display: grid;
   gap: 14px;

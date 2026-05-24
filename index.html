@@ -55,6 +55,19 @@
         </nav>
 
         <section id="cardsView" class="view is-active">
+          <div class="bulk-import-panel">
+            <details>
+              <summary>Bulk import vocabulary for all lessons</summary>
+              <div class="bulk-import-body">
+                <textarea id="bulkWordsInput" rows="6" placeholder="1, ことば, kotoba, word / language, noun&#10;1, べんきょうします, benkyou shimasu, study, verb&#10;2, これ, kore, this, demonstrative"></textarea>
+                <div class="custom-vocab-actions">
+                  <p id="bulkWordsStatus" aria-live="polite">Paste rows as: lesson number, Japanese, romaji, meaning, type.</p>
+                  <button id="bulkAddWords" type="button">Import All</button>
+                </div>
+              </div>
+            </details>
+          </div>
+
           <div class="flashcard-shell">
             <div class="revision-toolbar">
               <div>

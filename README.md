@@ -41,3 +41,11 @@ Open a lesson and paste rows into the "Add more vocabulary" box:
 ```
 
 Added words are saved in the browser and immediately appear in flashcards, quiz, search, and progress.
+
+You can also bulk import rows for all lessons:
+
+```text
+1, ことば, kotoba, word / language, noun
+2, これ, kore, this, demonstrative
+25, チャンス, chansu, chance, noun
+```

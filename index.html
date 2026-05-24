@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Japanese Vocabulary Lessons L1-L25</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <header class="app-header">
+      <div>
+        <p class="eyebrow">Minna no Nihongo inspired study planner</p>
+        <h1>Japanese Vocabulary L1-L25</h1>
+      </div>
+      <div class="header-actions">
+        <label class="search-box" for="searchInput">
+          <span aria-hidden="true">Search</span>
+          <input id="searchInput" type="search" placeholder="Search kana, romaji, or meaning">
+        </label>
+      </div>
+    </header>
+
+    <main class="layout">
+      <aside class="lesson-panel" aria-label="Lesson list">
+        <div class="panel-title">
+          <span>Lessons</span>
+          <strong id="lessonCount">25</strong>
+        </div>
+        <div id="lessonList" class="lesson-list"></div>
+      </aside>
+
+      <section class="study-area">
+        <div class="lesson-hero">
+          <div>
+            <p id="lessonTag" class="eyebrow">Lesson 1</p>
+            <h2 id="lessonTitle">Introductions</h2>
+            <p id="lessonDescription">Core words for first meetings and classroom basics.</p>
+          </div>
+          <div class="lesson-stats">
+            <div>
+              <span id="wordCount">0</span>
+              <small>words</small>
+            </div>
+            <div>
+              <span id="knownCount">0</span>
+              <small>known</small>
+            </div>
+          </div>
+        </div>
+
+        <nav class="tabs" aria-label="Study modes">
+          <button class="tab is-active" type="button" data-view="cards">Revision</button>
+          <button class="tab" type="button" data-view="quiz">Quiz</button>
+          <button class="tab" type="button" data-view="progress">Progress</button>
+        </nav>
+
+        <section id="cardsView" class="view is-active">
+          <div class="flashcard-shell">
+            <div class="revision-toolbar">
+              <div>
+                <p class="eyebrow">Lesson revision</p>
+                <h3 id="flashcardProgress">Card 1 of 8</h3>
+              </div>
+              <div class="revision-actions">
+                <button id="shuffleCards" class="secondary-button" type="button">Shuffle</button>
+                <button id="resetCards" class="secondary-button" type="button">Reset</button>
+              </div>
+            </div>
+
+            <button id="flashcard" class="flashcard" type="button" aria-label="Flip flashcard">
+              <span class="flashcard-side-label" id="flashcardSide">Japanese</span>
+              <span class="flashcard-main" id="flashcardMain">わたし</span>
+              <span class="flashcard-sub" id="flashcardSub">Tap to reveal meaning</span>
+            </button>
+
+            <div class="flashcard-controls">
+              <button id="previousCard" type="button">Previous</button>
+              <button id="markKnownCard" type="button">Mark Known</button>
+              <button id="nextCard" type="button">Next</button>
+            </div>
+          </div>
+
+          <div class="list-heading">
+            <h3>Vocabulary list</h3>
+            <p>Search or mark words while revising this lesson.</p>
+          </div>
+          <div id="wordGrid" class="word-grid"></div>
+        </section>
+
+        <section id="quizView" class="view">
+          <div class="quiz-shell">
+            <div class="quiz-card">
+              <p class="eyebrow">Choose the meaning</p>
+              <h3 id="quizPrompt">word</h3>
+              <p id="quizRomaji">gakusei</p>
+            </div>
+            <div id="quizOptions" class="quiz-options"></div>
+            <div class="quiz-footer">
+              <p id="quizFeedback" aria-live="polite">Pick an answer to begin.</p>
+              <button id="nextQuestion" type="button">Next</button>
+            </div>
+          </div>
+        </section>
+
+        <section id="progressView" class="view">
+          <div class="progress-panel">
+            <h3>Your lesson progress</h3>
+            <p>Use the check button on vocabulary cards to mark words you know. Progress is saved in this browser.</p>
+            <div id="progressList" class="progress-list"></div>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <script src="vocabulary.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>

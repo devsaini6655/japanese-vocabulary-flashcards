@@ -7,7 +7,8 @@ const state = {
   flashcardOrder: {},
   quizWord: null,
   quizAnswered: false,
-  known: JSON.parse(localStorage.getItem("knownVocabulary") || "{}")
+  known: JSON.parse(localStorage.getItem("knownVocabulary") || "{}"),
+  customWords: JSON.parse(localStorage.getItem("customVocabulary") || "{}")
 };
 
 const lessonList = document.querySelector("#lessonList");
@@ -29,6 +30,10 @@ const nextCard = document.querySelector("#nextCard");
 const markKnownCard = document.querySelector("#markKnownCard");
 const shuffleCards = document.querySelector("#shuffleCards");
 const resetCards = document.querySelector("#resetCards");
+const customWordsInput = document.querySelector("#customWordsInput");
+const addCustomWords = document.querySelector("#addCustomWords");
+const clearCustomWords = document.querySelector("#clearCustomWords");
+const customWordsStatus = document.querySelector("#customWordsStatus");
 const quizPrompt = document.querySelector("#quizPrompt");
 const quizRomaji = document.querySelector("#quizRomaji");
 const quizOptions = document.querySelector("#quizOptions");
@@ -39,9 +44,13 @@ function getCurrentLesson() {
   return lessons.find((lesson) => lesson.id === state.lessonId) || lessons[0];
 }
 
+function getLessonWords(lesson) {
+  return [...lesson.words, ...(state.customWords[lesson.id] || [])];
+}
+
 function getLessonOrder(lesson) {
   if (!state.flashcardOrder[lesson.id]) {
-    state.flashcardOrder[lesson.id] = lesson.words.map((_, index) => index);
+    state.flashcardOrder[lesson.id] = getLessonWords(lesson).map((_, index) => index);
   }
 
   return state.flashcardOrder[lesson.id];
@@ -55,11 +64,16 @@ function saveKnown() {
   localStorage.setItem("knownVocabulary", JSON.stringify(state.known));
 }
 
-function getFilteredWords(lesson) {
-  const query = state.query.trim().toLowerCase();
-  if (!query) return lesson.words;
+function saveCustomWords() {
+  localStorage.setItem("customVocabulary", JSON.stringify(state.customWords));
+}
 
-  return lesson.words.filter((word) => {
+function getFilteredWords(lesson) {
+  const lessonWords = getLessonWords(lesson);
+  const query = state.query.trim().toLowerCase();
+  if (!query) return lessonWords;
+
+  return lessonWords.filter((word) => {
     return [word.kana, word.romaji, word.meaning, word.type]
       .join(" ")
       .toLowerCase()
@@ -69,7 +83,8 @@ function getFilteredWords(lesson) {
 
 function renderLessons() {
   lessonList.innerHTML = lessons.map((lesson) => {
-    const knownWords = lesson.words.filter((word) => state.known[wordKey(lesson.id, word)]).length;
+    const lessonWords = getLessonWords(lesson);
+    const knownWords = lessonWords.filter((word) => state.known[wordKey(lesson.id, word)]).length;
     const activeClass = lesson.id === state.lessonId ? " is-active" : "";
 
     return `
@@ -77,21 +92,22 @@ function renderLessons() {
         <span class="lesson-number">L${lesson.id}</span>
         <span>
           <span class="lesson-name">${lesson.title}</span>
-          <span class="lesson-meta">${knownWords}/${lesson.words.length} known</span>
+          <span class="lesson-meta">${knownWords}/${lessonWords.length} known</span>
         </span>
-        <span class="lesson-meta">${lesson.words.length}</span>
+        <span class="lesson-meta">${lessonWords.length}</span>
       </button>
     `;
   }).join("");
 }
 
 function renderLessonHeader(lesson) {
-  const knownWords = lesson.words.filter((word) => state.known[wordKey(lesson.id, word)]).length;
+  const lessonWords = getLessonWords(lesson);
+  const knownWords = lessonWords.filter((word) => state.known[wordKey(lesson.id, word)]).length;
 
   lessonTag.textContent = `Lesson ${lesson.id}`;
   lessonTitle.textContent = lesson.title;
   lessonDescription.textContent = lesson.description;
-  wordCount.textContent = lesson.words.length;
+  wordCount.textContent = lessonWords.length;
   knownCount.textContent = knownWords;
 }
 
@@ -131,12 +147,13 @@ function renderCards(lesson) {
 function renderFlashcard(lesson) {
   const order = getLessonOrder(lesson);
   if (!order.length) return;
+  const lessonWords = getLessonWords(lesson);
 
   if (state.flashcardIndex >= order.length) {
     state.flashcardIndex = 0;
   }
 
-  const word = lesson.words[order[state.flashcardIndex]];
+  const word = lessonWords[order[state.flashcardIndex]];
   const key = wordKey(lesson.id, word);
   const isKnown = Boolean(state.known[key]);
 
@@ -154,8 +171,9 @@ function renderFlashcard(lesson) {
 
 function renderProgress() {
   progressList.innerHTML = lessons.map((lesson) => {
-    const knownWords = lesson.words.filter((word) => state.known[wordKey(lesson.id, word)]).length;
-    const percent = Math.round((knownWords / lesson.words.length) * 100);
+    const lessonWords = getLessonWords(lesson);
+    const knownWords = lessonWords.filter((word) => state.known[wordKey(lesson.id, word)]).length;
+    const percent = Math.round((knownWords / lessonWords.length) * 100);
 
     return `
       <div class="progress-item">
@@ -175,12 +193,13 @@ function shuffle(items) {
 
 function buildQuiz() {
   const lesson = getCurrentLesson();
+  const lessonWords = getLessonWords(lesson);
   state.quizAnswered = false;
-  state.quizWord = lesson.words[Math.floor(Math.random() * lesson.words.length)];
+  state.quizWord = lessonWords[Math.floor(Math.random() * lessonWords.length)];
 
   const wrongOptions = shuffle(
     lessons
-      .flatMap((item) => item.words)
+      .flatMap((item) => getLessonWords(item))
       .filter((word) => word.meaning !== state.quizWord.meaning)
   ).slice(0, 3);
 
@@ -226,7 +245,7 @@ function moveFlashcard(direction) {
 function toggleCurrentFlashcardKnown() {
   const lesson = getCurrentLesson();
   const order = getLessonOrder(lesson);
-  const word = lesson.words[order[state.flashcardIndex]];
+  const word = getLessonWords(lesson)[order[state.flashcardIndex]];
   const key = wordKey(lesson.id, word);
 
   state.known[key] = !state.known[key];
@@ -237,12 +256,29 @@ function toggleCurrentFlashcardKnown() {
 
 function resetFlashcards(shuffleDeck = false) {
   const lesson = getCurrentLesson();
+  const lessonWords = getLessonWords(lesson);
   state.flashcardOrder[lesson.id] = shuffleDeck
-    ? shuffle(lesson.words.map((_, index) => index))
-    : lesson.words.map((_, index) => index);
+    ? shuffle(lessonWords.map((_, index) => index))
+    : lessonWords.map((_, index) => index);
   state.flashcardIndex = 0;
   state.flashcardFlipped = false;
   renderFlashcard(lesson);
+}
+
+function parseCustomWords(text) {
+  return text
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => line.split(/\t|,/).map((part) => part.trim()))
+    .filter((parts) => parts.length >= 3)
+    .map(([kana, romaji, meaning, type = "custom"]) => ({ kana, romaji, meaning, type }));
+}
+
+function refreshLessonOrder() {
+  delete state.flashcardOrder[state.lessonId];
+  state.flashcardIndex = 0;
+  state.flashcardFlipped = false;
 }
 
 lessonList.addEventListener("click", (event) => {
@@ -277,6 +313,39 @@ nextCard.addEventListener("click", () => moveFlashcard(1));
 markKnownCard.addEventListener("click", toggleCurrentFlashcardKnown);
 shuffleCards.addEventListener("click", () => resetFlashcards(true));
 resetCards.addEventListener("click", () => resetFlashcards(false));
+
+addCustomWords.addEventListener("click", () => {
+  const words = parseCustomWords(customWordsInput.value);
+
+  if (!words.length) {
+    customWordsStatus.textContent = "No valid rows found. Use: Japanese, romaji, meaning, type.";
+    return;
+  }
+
+  const lessonId = String(state.lessonId);
+  state.customWords[lessonId] = [...(state.customWords[lessonId] || []), ...words];
+  saveCustomWords();
+  customWordsInput.value = "";
+  customWordsStatus.textContent = `Added ${words.length} word${words.length === 1 ? "" : "s"} to Lesson ${state.lessonId}.`;
+  refreshLessonOrder();
+  render();
+});
+
+clearCustomWords.addEventListener("click", () => {
+  const lessonId = String(state.lessonId);
+  const count = (state.customWords[lessonId] || []).length;
+
+  if (!count) {
+    customWordsStatus.textContent = `Lesson ${state.lessonId} has no added words.`;
+    return;
+  }
+
+  delete state.customWords[lessonId];
+  saveCustomWords();
+  customWordsStatus.textContent = `Cleared ${count} added word${count === 1 ? "" : "s"} from Lesson ${state.lessonId}.`;
+  refreshLessonOrder();
+  render();
+});
 
 searchInput.addEventListener("input", (event) => {
   state.query = event.target.value;

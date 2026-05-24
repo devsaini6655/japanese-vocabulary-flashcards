@@ -84,6 +84,20 @@
             <h3>Vocabulary list</h3>
             <p>Search or mark words while revising this lesson.</p>
           </div>
+          <div class="custom-vocab-panel">
+            <div class="custom-vocab-header">
+              <div>
+                <p class="eyebrow">Your lesson words</p>
+                <h3>Add more vocabulary</h3>
+              </div>
+              <button id="clearCustomWords" class="secondary-button" type="button">Clear Added</button>
+            </div>
+            <textarea id="customWordsInput" rows="5" placeholder="ことば, kotoba, word / language, noun&#10;べんきょうします, benkyou shimasu, study, verb"></textarea>
+            <div class="custom-vocab-actions">
+              <p id="customWordsStatus" aria-live="polite">Paste one word per line: Japanese, romaji, meaning, type.</p>
+              <button id="addCustomWords" type="button">Add To Lesson</button>
+            </div>
+          </div>
           <div id="wordGrid" class="word-grid"></div>
         </section>
 

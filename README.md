@@ -25,7 +25,19 @@ You can add more words to any lesson by adding more objects to that lesson's `wo
 
 - Lesson navigation from L1 to L25
 - Lesson-wise flashcard revision with flip, previous, next, shuffle, and reset
+- Add your own lesson vocabulary in the browser using pasted rows
 - Search by Japanese, romaji, English meaning, or word type
 - Vocabulary cards with known-word tracking
 - Browser-saved progress
 - Multiple-choice quiz mode per lesson
+
+## Add your own vocabulary
+
+Open a lesson and paste rows into the "Add more vocabulary" box:
+
+```text
+ことば, kotoba, word / language, noun
+べんきょうします, benkyou shimasu, study, verb
+```
+
+Added words are saved in the browser and immediately appear in flashcards, quiz, search, and progress.

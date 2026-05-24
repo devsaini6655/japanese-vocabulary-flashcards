@@ -391,6 +391,63 @@ h1 {
   font-weight: 700;
 }
 
+.custom-vocab-panel {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.88);
+}
+
+.custom-vocab-header,
+.custom-vocab-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.custom-vocab-header h3 {
+  margin-bottom: 0;
+}
+
+.custom-vocab-panel textarea {
+  width: 100%;
+  min-height: 112px;
+  resize: vertical;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  outline: 0;
+  background: white;
+  color: var(--ink);
+  font: inherit;
+  line-height: 1.5;
+}
+
+.custom-vocab-panel textarea:focus {
+  border-color: rgba(201, 69, 61, 0.56);
+  box-shadow: 0 0 0 3px rgba(201, 69, 61, 0.12);
+}
+
+.custom-vocab-actions p {
+  margin-bottom: 0;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.custom-vocab-actions button {
+  min-height: 44px;
+  padding: 11px 16px;
+  border: 0;
+  border-radius: 8px;
+  color: white;
+  background: var(--accent);
+  font-weight: 900;
+}
+
 .word-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
@@ -656,6 +713,8 @@ h1 {
   .quiz-footer,
   .revision-toolbar,
   .list-heading,
+  .custom-vocab-header,
+  .custom-vocab-actions,
   .progress-item {
     display: grid;
     grid-template-columns: 1fr;
@@ -666,7 +725,8 @@ h1 {
   }
 
   .flashcard-controls button,
-  .secondary-button {
+  .secondary-button,
+  .custom-vocab-actions button {
     width: 100%;
   }
 }
